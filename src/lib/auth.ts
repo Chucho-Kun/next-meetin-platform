@@ -9,7 +9,8 @@ export const auth = betterAuth({
         usePlural: true
     }),
     emailAndPassword: {
-        enabled: true
+        enabled: true,
+        requireEmailVerification: true // el usuario debe haber verificado su cuenta
     },
     plugins: [nextCookies()]    // esto siempre al final de la configuracion
 })
