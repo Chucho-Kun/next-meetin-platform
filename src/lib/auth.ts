@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { nextCookies } from "better-auth/next-js"
 import { db } from "../db";
+import { AuthEmailService } from "../emails/services/AuthEmailService";
 
 export const auth = betterAuth({
     database: drizzleAdapter(db, {
@@ -11,6 +12,17 @@ export const auth = betterAuth({
     emailAndPassword: {
         enabled: true,
         requireEmailVerification: true // el usuario debe haber verificado su cuenta
+    },
+    emailVerification: {
+
+        sendOnSignIn: true,
+        sendVerificationEmail: async ( { user, url } ) => {
+
+            const { name, email } = user
+            await AuthEmailService.sendVerificationEmail({ 
+                name, email, url
+            })
+        }
     },
     plugins: [nextCookies()]    // esto siempre al final de la configuracion
 })
