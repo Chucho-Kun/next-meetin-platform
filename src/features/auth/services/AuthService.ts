@@ -27,8 +27,12 @@ class AuthService {
         // manejar registro
         await auth.api.signUpEmail({
             body: {
-                name, email, password
-            }
+                name, 
+                email, 
+                password, 
+                callbackURL: '/dashboard'
+            },
+            headers: await headers()
         })
     
         return {

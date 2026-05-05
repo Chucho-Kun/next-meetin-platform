@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form"
 import { SignInInput, SignInSchema } from "../schemas/authSchema"
 import { signInAction } from "../actions/auth-actions"
 import toast from "react-hot-toast"
+import { redirect } from "next/navigation"
 
 export default function LoginForm() {
 
@@ -21,6 +22,7 @@ export default function LoginForm() {
     }
     if(success) {
       toast.success(success)
+      redirect('/dashboard')
     }
   }
 
