@@ -1,6 +1,7 @@
 import { FormErrors, FormInput, FormLabel, FormSubmit, FormTextArea } from "@/src/shared/components/forms";
 import { useFormContext } from "react-hook-form";
 import { CommunityInput } from "../schemas/communitySchema";
+import { UploadDropzone } from "@/src/shared/utils/uploadthings";
 
 export default function CommunityForm() {
 
@@ -16,6 +17,11 @@ export default function CommunityForm() {
                 {...register('name')}
             />
             {errors.name && <FormErrors>{errors.name.message}</FormErrors>}
+
+            <UploadDropzone
+                endpoint={'meetiUploader'}
+                className="ut-button:bg-orange-600 ut-label:uppercase hover:ut-button:bg-orange-700"
+            />
 
             <FormLabel htmlFor="name">Descripcion Comunidad</FormLabel>
             <FormTextArea
