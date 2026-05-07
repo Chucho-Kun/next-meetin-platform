@@ -16,7 +16,8 @@ export default function CreateCommunity() {
         mode: 'all',
         defaultValues: {
             name: '',
-            description: ''
+            description: '',
+            image: ''
         }
     })
 
