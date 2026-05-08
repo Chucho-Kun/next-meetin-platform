@@ -57,9 +57,17 @@ class CommunityService {
         return community
     } 
 
-    async getCommunityDetails(communityId: string, user: User ) {
+    async getCommunityDetails(communityId: string, user?: User | null ) {
 
         const community = await this.getCommunity(communityId)
+
+        if(!user) {
+            return {
+                data: community,
+                context: null,
+                permissions: null
+            }
+        }
 
         const isMember = false
         const isAdmin = CommunityPolicy.isAdmin(user, community)
@@ -69,7 +77,7 @@ class CommunityService {
                     isMember,
                     isAdmin
                 },
-                permission: {
+                permissions: {
                     canEdit: CommunityPolicy.canEdit(user, community),
                     canDelete: CommunityPolicy.canDelete(user, community),
                     canJoin: MembershipPolicy.canJoin(user, community, isMember),
