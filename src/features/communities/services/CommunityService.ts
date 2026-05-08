@@ -7,10 +7,12 @@ import { communityRepository, ICommunityRepository } from './CommunityRepository
 import { checkPassword } from '@/src/shared/utils/auth';
 import { error } from 'console';
 import { deleteUTFiles } from '@/src/lib/uploadthing-server';
+import { IMembershipRepository, membershipRepository } from './MembershipRepository';
 
 class CommunityService {
     constructor(
-        private communityRepository: ICommunityRepository
+        private communityRepository: ICommunityRepository,
+        private membershipRepository: IMembershipRepository
     ){}
 
     async createCommunity( data: CommunityInput, userId: string ) {
@@ -26,7 +28,7 @@ class CommunityService {
         
         const enriched = await Promise.all(communities.map(async (community) => {
 
-            const isMember = true
+            const isMember = await this.membershipRepository.isMember(community.id, user.id)
             const isAdmin = CommunityPolicy.isAdmin(user, community)
 
             return {
@@ -129,4 +131,4 @@ class CommunityService {
     }
 }
 
-export const communityService = new CommunityService(communityRepository)
+export const communityService = new CommunityService(communityRepository, membershipRepository)
