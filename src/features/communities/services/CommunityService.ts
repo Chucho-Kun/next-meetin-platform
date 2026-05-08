@@ -4,6 +4,9 @@ import { CommunityPolicy } from '../policies/CommunityPolicy';
 import { MembershipPolicy } from '../policies/MembershipPolicy';
 import { CommunityInput } from '../schemas/communitySchema';
 import { communityRepository, ICommunityRepository } from './CommunityRepository';
+import { checkPassword } from '@/src/shared/utils/auth';
+import { error } from 'console';
+import { deleteUTFiles } from '@/src/lib/uploadthing-server';
 
 class CommunityService {
     constructor(
@@ -85,6 +88,36 @@ class CommunityService {
         }
 
         await this.communityRepository.update(data, community.id)
+    }
+
+    async deleteCommunity(communityId: string, password: string, user: User) {
+        // Obtener comunidad
+        const community = await this.getCommunity(communityId)
+    
+        // revisar permisos
+        if(!CommunityPolicy.canDelete(user, community)){
+            throw new Error('No tienes permisos para eliminar esta comunidad')
+        }
+
+        // Verificar Password
+        const isValidPassword = await checkPassword(password)
+        console.log(isValidPassword);
+        
+        if(!isValidPassword) {
+            return {
+                error: 'El password es incorrecto',
+                success: ''
+            }
+        }
+
+        // Eliminar comunidad e Imagen
+        await this.communityRepository.delete(communityId)
+        await deleteUTFiles(community.image)
+        return {
+            error: '',
+            success: 'Comunidad eliminada correctamente'
+        }
+        
     }
 }
 

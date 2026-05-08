@@ -9,7 +9,10 @@ import { redirect } from "next/navigation"
 const title = "Crear comunidad"
 
 export const metadata: Metadata = {
-  title: generatePageTitle( title )
+  title: generatePageTitle( title ),
+  openGraph: {
+    title: generatePageTitle( title )
+  }
 }
 
 export default async function CreateCommunityPage() {
