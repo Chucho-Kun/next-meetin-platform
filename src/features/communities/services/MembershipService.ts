@@ -3,7 +3,7 @@ import { User } from "../../auth/types/auth.types";
 import { communityRepository, ICommunityRepository } from './CommunityRepository';
 import { notFound } from 'next/navigation';
 import { MembershipPolicy } from '../policies/MembershipPolicy';
-import { success } from 'zod';
+import { CommunityPolicy } from '../policies/CommunityPolicy';
 
 class MembershipService {
     constructor(
@@ -46,6 +46,33 @@ class MembershipService {
                 }
             }
         }
+    }
+
+    async getJoinedCommunities(user: User) {
+        const joined = await this.membershipRepository.findJoinedCommunities(user.id)
+
+        const enriched = await Promise.all(joined.map(async ({community}) => {
+        
+            const isMember = await this.membershipRepository.isMember(community.id, user.id)
+            const isAdmin = CommunityPolicy.isAdmin(user, community)
+
+            return {
+                data: community,
+                context: {
+                    isMember,
+                    isAdmin
+                },
+                permissions: {
+                    canEdit: CommunityPolicy.canEdit(user, community),
+                    canDelete: CommunityPolicy.canDelete(user, community),
+                    canJoin: MembershipPolicy.canJoin(user, community, isMember),
+                    canLeave: MembershipPolicy.canLeave(user, community, isMember),
+                    canViewMembers: CommunityPolicy.canViewMembers( user, community)
+                        
+                }
+            }
+        }))
+        return enriched
     }
 }
 

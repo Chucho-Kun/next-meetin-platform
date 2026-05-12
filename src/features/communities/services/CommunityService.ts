@@ -37,7 +37,7 @@ class CommunityService {
                     isMember,
                     isAdmin
                 },
-                permission: {
+                permissions: {
                     canEdit: CommunityPolicy.canEdit(user, community),
                     canDelete: CommunityPolicy.canDelete(user, community),
                     canJoin: MembershipPolicy.canJoin(user, community, isMember),
