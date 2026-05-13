@@ -6,6 +6,7 @@ export interface IMembershipRepository {
     addMember(communityId: string, userId: string): Promise<void>
     removeMember(communityId: string, userId: string): Promise<void>
     isMember(communityId: string, userId: string): Promise<boolean>
+    findJoinedCommunities(userId: string): Promise<void>
 }
 
 class MembershipRepository implements IMembershipRepository {
@@ -36,6 +37,20 @@ class MembershipRepository implements IMembershipRepository {
                                     ))
                                 .limit(1)
         return !!result
+        
+    }
+
+    async findJoinedCommunities(userId: string): Promise<void> {
+        const result = await db.query.communityMembers.findMany({
+            where: {
+                userId
+            },
+            with: {
+                community: true
+            }
+        })
+                            
+        console.log(result);
         
     }
 }
