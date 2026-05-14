@@ -1,12 +1,13 @@
 import { db } from "@/src/db"
 import { communityMembers } from "@/src/db/schema"
 import { and, eq } from "drizzle-orm"
+import { JoinedCommunity } from "../types/community.types"
 
 export interface IMembershipRepository {
     addMember(communityId: string, userId: string): Promise<void>
     removeMember(communityId: string, userId: string): Promise<void>
     isMember(communityId: string, userId: string): Promise<boolean>
-    findJoinedCommunities(userId: string): Promise<void>
+    findJoinedCommunities(userId: string): Promise<JoinedCommunity[]>
 }
 
 class MembershipRepository implements IMembershipRepository {
@@ -40,17 +41,18 @@ class MembershipRepository implements IMembershipRepository {
         
     }
 
-    async findJoinedCommunities(userId: string): Promise<void> {
+    async findJoinedCommunities(userId: string): Promise<JoinedCommunity[]> {
         const result = await db.query.communityMembers.findMany({
             where: {
                 userId
             },
             with: {
-                community: true
+                community: true,
+                user: true
             }
         })
                             
-        console.log(result);
+        return result
         
     }
 }
