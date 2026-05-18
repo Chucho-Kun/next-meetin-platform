@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { MembershipPolicy } from '../policies/MembershipPolicy';
 import { success } from 'zod';
 import { CommunityPolicy } from '../policies/CommunityPolicy';
+import { id } from 'zod/v4/locales';
 
 class MembershipService {
     constructor(
@@ -56,9 +57,11 @@ class MembershipService {
         
             const isMember = await this.membershipRepository.isMember(community.id, user.id)
             const isAdmin = CommunityPolicy.isAdmin(user, community)
+            const memberCount = await this.membershipRepository.getMemberCount(community.id)
 
             return {
                 data: community,
+                memberCount,
                 context: {
                     isMember,
                     isAdmin
@@ -74,7 +77,6 @@ class MembershipService {
             }
         }))
 
-        console.log(enriched);
         return enriched
     }
 }

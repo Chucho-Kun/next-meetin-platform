@@ -30,9 +30,11 @@ class CommunityService {
 
             const isMember = await this.membershipRepository.isMember(community.id, user.id)
             const isAdmin = CommunityPolicy.isAdmin(user, community)
+            const memberCount = await this.membershipRepository.getMemberCount(community.id)
 
             return {
                 data: community,
+                memberCount,
                 context: {
                     isMember,
                     isAdmin
@@ -62,10 +64,12 @@ class CommunityService {
     async getCommunityDetails(communityId: string, user?: User | null ) {
 
         const community = await this.getCommunity(communityId)
+        const memberCount = await this.membershipRepository.getMemberCount(community.id)
 
         if(!user) {
             return {
                 data: community,
+                memberCount,
                 context: null,
                 permissions: null
             }
@@ -75,6 +79,7 @@ class CommunityService {
         const isAdmin = CommunityPolicy.isAdmin(user, community)
         return {
                 data: community,
+                memberCount,
                 context: {
                     isMember,
                     isAdmin
