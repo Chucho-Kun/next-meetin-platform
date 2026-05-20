@@ -1,3 +1,4 @@
+import { INotificationRepository, notificationRepository } from './../../notifications/services/NotificationRepository';
 import { IMembershipRepository, membershipRepository } from './MembershipRepository';
 import { User } from "../../auth/types/auth.types";
 import { communityRepository, ICommunityRepository } from './CommunityRepository';
@@ -10,7 +11,8 @@ import { id } from 'zod/v4/locales';
 class MembershipService {
     constructor(
         private membershipRepository: IMembershipRepository,
-        private communityRepository: ICommunityRepository
+        private communityRepository: ICommunityRepository,
+        private notificationRepository: INotificationRepository
     ){}
 
     async toggleMembership(communityId: string, user: User) {
@@ -24,6 +26,14 @@ class MembershipService {
         // revisar si puede unirse
         if(MembershipPolicy.canJoin(user, community, isMember)) {
             await this.membershipRepository.addMember(communityId, user.id)
+
+            // Crear notificacion
+            const notification = await this.notificationRepository.create({
+                userId: community.createdBy,
+                actorName: user.name,
+                message: 'Se unió a tu comunidad',
+                target: community.name,
+            })
 
             return {
                 success: true,
@@ -81,4 +91,4 @@ class MembershipService {
     }
 }
 
-export const membershipService= new MembershipService(membershipRepository,communityRepository)
+export const membershipService= new MembershipService(membershipRepository,communityRepository, notificationRepository)
